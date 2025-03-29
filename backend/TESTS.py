@@ -9,6 +9,6 @@ evenements_df = pd.read_csv(data / 'evenements_associations.csv')
 
 id = 2
 
-print(type(associations_df.set_index('id').loc[id,'description']))
+evenements = evenements_df[evenements_df['association_id'] == id]
 
-
+print(evenements.to_json())

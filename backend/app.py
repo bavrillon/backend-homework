@@ -27,13 +27,33 @@ def api_associations():
     return jsonify(liste), 200
 
 @app.route('/api/association/<int:id>', methods=['GET'])
-def api_detail_association():
+def api_detail_association(id):
     if id in associations_df['id'].values :
-        detail = associations_df.set_index('id').loc[id,'description']
-        return jsonify(detail), 200
+        detail = associations_df.set_index('id').loc[id]        #On récupère ici une série Pd
+        return detail.to_json(), 200
     else :
         return jsonify({ "error": "Association not found" }), 404
+    
+@app.route('/api/evenements', methods=['GET'])
+def api_evenements():
+    liste = evenements_df['nom'].values.tolist()
+    return jsonify(liste), 200
 
+@app.route('/api/evenement/<int:id>', methods=['GET'])
+def api_detail_evenement(id):
+    if id in evenements_df['id'].values :
+        detail = evenements_df.set_index('id').loc[id]      #On récupère ici une série Pd
+        return detail.to_json(), 200
+    else :
+        return jsonify({ "error": "Event not found" }), 404
+    
+@app.route('/api/association/<int:id>/evenements', methods=['GET'])
+def api_evenements_association(id):
+    if id in associations_df['id'].values :
+        evenements = evenements_df[evenements_df['association_id'] == id].loc[:,['id','nom','date','lieu','description']]        #On récupère ici un df Pd
+        return evenements.to_json(), 200
+    else :
+        return jsonify({ "error": "Association not found" }), 404
 
 if __name__ == '__main__':
     app.run(debug=False)
