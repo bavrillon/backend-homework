@@ -1,6 +1,8 @@
 from flask import Flask
 from flask import request
 from flask import redirect
+from flask import render_template
+import requests
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 import json
@@ -57,13 +59,13 @@ def list_notes():
 @app.route('/front/notes')
 def front_users():
     url = request.url_root + '/api/list_notes'
-    req = request.get(url)
+    req = requests.get(url)
     if not (200 <= req.status_code < 300):
         # return render_template('errors.html', error='...')
         return dict(error=f"could not request notes list", url=url,
                     status=req.status_code, text=req.text)
-    users = req.json()
-    return render_template('notes.html.j2', users=users, version=VERSION)
+    notes = req.json()
+    return render_template('notes.html.j2', notes=notes)
 
 if __name__ == '__main__':
     app.run()
