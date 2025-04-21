@@ -5,6 +5,9 @@ from flask import render_template
 import requests
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
+from flask_socketio import SocketIO
+import eventlet
+import eventlet.wsgi
 import json
 
 
@@ -74,10 +77,11 @@ def update_note(id_note):
         note = Note.query.filter_by(id=id_note).first()
         note.done = done
         db.session.commit()
+        socketio.emit('notes_update', {'id_note': id_note, 'done':done})
         return dict(message="Note updated successfully"), 200
     except Exception as exc:
         return dict(error=f"{type(exc)}: {exc}"), 422
 
 
 if __name__ == '__main__':
-    app.run()
+    socketio.run(app, debug=True)

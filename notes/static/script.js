@@ -32,3 +32,17 @@ document.addEventListener(
       })
   },
 )
+
+let socket = io.connect(
+  "http://" + document.domain + ":" + location.port);
+
+  socket.on('notes_update', function(data) {
+    const id_note = data.id_note;
+    const done = data.done;
+  
+    document.querySelectorAll('input[type="checkbox"][data-id]').forEach((checkbox) => {
+      if (checkbox.getAttribute('data-id') == id_note) {
+        checkbox.checked = done;
+      }
+    });
+  });
