@@ -6,15 +6,14 @@ import requests
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 from flask_socketio import SocketIO
-import eventlet
-import eventlet.wsgi
 import json
 
 
 app = Flask(__name__)
+socketio = SocketIO(app, async_mode='threading')
 
 # filename where to store stuff (sqlite is file-based)
-db_name = 'notes.db'                                            #à déplacer hors-repos ! -> pk ?
+db_name = 'notes.db'                                            #à déplacer hors-repos ! 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_name
 # this variable, db, will be used for all SQLAlchemy commands
 db = SQLAlchemy(app)
@@ -32,7 +31,6 @@ with app.app_context():
 @app.route('/')
 def homepage():
     return redirect('/front/notes')
-
 
 @app.route('/api/notes', methods=['POST'])
 def create_note():
@@ -81,7 +79,7 @@ def update_note(id_note):
         return dict(message="Note updated successfully"), 200
     except Exception as exc:
         return dict(error=f"{type(exc)}: {exc}"), 422
-
+    
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
